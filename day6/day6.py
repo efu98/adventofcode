@@ -2,7 +2,6 @@ def part_one():
     with open("input", "r") as f:
         values = f.readline()
         values = [int(val) for val in values.split(',')]
-        print(values)
 
         for i in range(80):
             for fish in range(len(values)):
