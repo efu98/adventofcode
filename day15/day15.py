@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def find_neighbors(s, width, height):
     if s[1] < width - 1:
         yield (s[0], s[1]+1)
@@ -56,6 +53,19 @@ def level_wrap(level, offset):
     return level
 
 
+def extend_risk(risk_level, tiles):
+    full_risk = []
+    full_row = []
+    for row in tiles:
+        for risk_row in risk_level:
+            for tile in row:
+                full_row += [level_wrap(val, tile)for val in risk_row]
+            full_risk.append(full_row)
+            full_row = []
+
+    return full_risk
+
+
 def part_one():
     with open("input", "r") as f:
         risk_level = f.readlines()
@@ -72,7 +82,7 @@ def part_one():
 
 
 def part_two():
-    with open("test", "r") as f:
+    with open("input", "r") as f:
         risk_level = f.readlines()
 
         risk_level = [[int(val) for val in list(risk.strip())]
@@ -80,15 +90,14 @@ def part_two():
 
     tiles = [[i+j for i in range(0, 5)] for j in range(0, 5)]
 
-    extend_risk = []
-    extend_row = risk_level
-    for row in tiles:
-        for tile in row:
-            extend_row = np.concatenate((extend_row, [[level_wrap(val, tile)
-                                                       for val in risk] for risk in risk_level]), axis=1)
+    full_risk = extend_risk(risk_level, tiles)
 
-        print(extend_row)
-        extend_row = []
+    width = len(full_risk[0])
+    height = len(full_risk)
+
+    previous = dijkstra(width, height, full_risk)
+
+    return sum(find_path_risk(width, height, full_risk, previous))
 
 
 print(part_two())
